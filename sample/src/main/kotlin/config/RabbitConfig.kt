@@ -1,4 +1,4 @@
-package ru.shvets.rabbitmq.fanout.config
+package ru.shvets.rabbitmq.sample.config
 
 import org.springframework.amqp.core.*
 import org.springframework.amqp.core.Queue
@@ -23,7 +23,10 @@ class RabbitConfig {
     @Value("\${rabbit.amqp.hostname}")
     val hostname: String = ""
 
-    @Bean // создаем соединение
+    @Value("\${rabbit.amqp.queue}")
+    val queue: String = ""
+
+    @Bean
     fun connectionFactory(): ConnectionFactory {
         return CachingConnectionFactory(hostname)
     }
@@ -38,32 +41,8 @@ class RabbitConfig {
         return RabbitTemplate(connectionFactory())
     }
 
-    @Bean // определение очереди 1
-    fun myQueue1(): Queue {
-        return Queue("myQueue1")
-    }
-
-    @Bean // определение очереди 2
-    fun myQueue2(): Queue {
-        return Queue("myQueue2")
-    }
-
     @Bean
-    fun fanoutExchange(): FanoutExchange {
-        return FanoutExchange("common-exchange")
-    }
-
-    @Bean
-    fun binding1(): Binding {
-        return BindingBuilder
-            .bind(myQueue1())
-            .to(fanoutExchange())
-    }
-
-    @Bean
-    fun binding2(): Binding {
-        return BindingBuilder
-            .bind(myQueue2())
-            .to(fanoutExchange())
+    fun myQueue(): Queue {
+        return Queue(queue)
     }
 }
